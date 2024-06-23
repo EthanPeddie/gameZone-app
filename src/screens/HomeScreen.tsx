@@ -1,41 +1,24 @@
-import { ActivityIndicator, Dimensions, FlatList, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Text,
+  View,
+} from "react-native";
+import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import apiClient from "../api/apiClient";
-import color from "../config/color";
-import Card from "../components/Card";
-import { Game } from "../types/GamesType";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
-interface FetchGameResponse {
-  count: number;
-  results: Game[];
-}
+import color from "../config/color";
+import useGames from "../hooks/useGames";
+import GameCard from "../components/GameCard";
 
 const HomeScreen = () => {
   const { height } = Dimensions.get("window");
   const Height = height - useBottomTabBarHeight();
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  const fetchGames = async () => {
-    setLoading(true);
-    try {
-      const response = await apiClient.get<FetchGameResponse>("/games");
-      console.log(response.data.results);
-      setGames(response.data.results);
-    } catch (error) {
-      console.log("Data Fetching Error", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchGames();
-  }, []);
+  const { games, loading, error } = useGames();
 
   return (
     <LinearGradient
@@ -48,6 +31,11 @@ const HomeScreen = () => {
       }}
     >
       <SafeAreaView>
+        {error && (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text style={{ color: color.bgWhite, fontSize: 20 }}>{error}</Text>
+          </View>
+        )}
         {loading ? (
           <View>
             <ActivityIndicator size={40} color={color.bgWhite} />
@@ -57,7 +45,9 @@ const HomeScreen = () => {
             data={games}
             keyExtractor={(game) => game.id.toLocaleString()}
             numColumns={2}
-            renderItem={({ item, index }) => <Card game={item} key={index} />}
+            renderItem={({ item, index }) => (
+              <GameCard game={item} key={index} />
+            )}
           />
         )}
       </SafeAreaView>

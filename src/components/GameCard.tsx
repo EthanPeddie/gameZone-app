@@ -1,21 +1,23 @@
 import { View, Text } from "react-native";
 import React from "react";
-import color from "../config/color";
 import { Image } from "expo-image";
+
+import color from "../config/color";
 import { Game } from "../types/GamesType";
+import MetaCriticScore from "./MetaCriticScore";
+import PlatFormIconList from "./PlatFormIconList";
 
 interface Props {
   game: Game;
 }
 
-const Card = ({ game }: Props) => {
+const GameCard = ({ game }: Props) => {
   return (
     <View
       style={{
         margin: 6,
         backgroundColor: color.bgWhite,
         flex: 1,
-        aspectRatio: 1,
         borderRadius: 12,
         overflow: "hidden",
       }}
@@ -33,7 +35,6 @@ const Card = ({ game }: Props) => {
         style={{
           padding: 10,
           flexDirection: "row",
-          justifyContent: "space-between",
         }}
       >
         <Text
@@ -46,38 +47,22 @@ const Card = ({ game }: Props) => {
         >
           {game.name}
         </Text>
-        <View
-          style={{
-            width: 20,
-            height: 20,
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 5,
-            backgroundColor:
-              game.metacritic > 80
-                ? "#16f74e"
-                : game.metacritic > 60
-                ? "#f3db00"
-                : "red",
-          }}
-        >
-          <Text
-            style={{
-              color:
-                game.metacritic > 80
-                  ? "white"
-                  : game.metacritic > 60
-                  ? "black"
-                  : "white",
-              fontWeight: "700",
-            }}
-          >
-            {game.metacritic}
-          </Text>
-        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          paddingHorizontal: 10,
+          paddingBottom: 10,
+        }}
+      >
+        <PlatFormIconList
+          platforms={game.parent_platforms.map((p) => p.platform)}
+        />
+        <MetaCriticScore score={game.metacritic} />
       </View>
     </View>
   );
 };
 
-export default Card;
+export default GameCard;
